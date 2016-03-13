@@ -1,6 +1,8 @@
 var PeepGrid = (function() {
 	var PeepGrid = function(container, options) {
 		this.container = d3.select(container);
+		// this.personSize = {width: 118, height: 118}
+		this.personSize = {width: 118, height: 118}
 		this.options = extend(PeepGrid.defaultOptions, options);
 		this.initSVGAndDefs();
 		this.initPeeps();
@@ -13,13 +15,21 @@ var PeepGrid = (function() {
 	}
 
 	PeepGrid.prototype.initSVGAndDefs = function() {
-		this.svg = this.container.append('svg');
+		this.svgSize = { width: this.options.peoplePerRow * this.personSize.width
+		               , height: this.options.rows * this.personSize.height }
+
+	  console.log(this.personSize);
+
+		this.svg = this.container.append('svg')
+			// .attr('viewBox', '0 0 ' + this.svgSize.width + ' ' + this.svgSize.height);
+			.attr('viewBox', '0 0 ' + this.personSize.width + ' ' + this.personSize.height);
+			// .attr('viewBox', '0 0 ' + 10 + ' ' + 10);
 
 		this.personDef = this.svg.append('defs')
 			.append('g')
 			.attr('id', 'person')
-			.attr('width', '100px')
-			.attr('height', '100px')
+			// .attr('width', '100px')
+			// .attr('height', '100px')
 
 		// background (not visible)
 		this.personDef.append('path')
@@ -41,7 +51,22 @@ var PeepGrid = (function() {
 	}
 
 	PeepGrid.prototype.initPeeps = function() {
-		this.svg.append('use').attr('xlink:href', '#person').attr('width', '100px').attr('height', '100px');
+		this.svg.append('use')
+			.attr('xlink:href', '#person')
+			.attr('x', 0)
+			.attr('y', 0)
+			// .attr('x', -(this.personSize.width * 0.5))
+			// .attr('y', -(this.personSize.height * 0.5));
+
+		// for (var j=0; j<this.options.rows; j++) {
+		// 	for (var i=0; i<this.options.peoplePerRow; i++) {
+		// 		console.log(i*this.personSize.width);
+		// 		this.svg.append('use')
+		// 			.attr('xlink:href', '#person')
+		// 			.attr('x', i*this.personSize.width*0.5)
+		// 			.attr('y', j*this.personSize.height*0.5);
+		// 	}
+		// }
 	}
 
 	return PeepGrid;
