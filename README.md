@@ -11,7 +11,7 @@ To use:
 
 3) Instantiate the grid with the call `new PeepGrid(<id-of-container>, options)`.
 
-4) The options is an object.  
+4) The options is an object (OPTIONAL).  
 
 5) To get the number of highlighted people, call the method `getTally` on the object returned from the constructor.
 
