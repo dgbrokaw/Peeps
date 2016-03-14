@@ -11,4 +11,12 @@ To use:
 
 3) Instantiate the grid with the call `new PeepGrid(<id-of-container>, options)`.
 
-4) The options is an object.  You can change the size by passing in the option "scale."  The default is 0.75.
+4) The options is an object.  
+
+5) To get the number of highlighted people, call the method `getTally` on the object returned from the constructor.
+
+Available options:
+
+- "scale": size of people (default: 0.75)
+- "rows": number of rows (default: 10)
+- "peoplePerRow": the number of people in each row (default: 10)
