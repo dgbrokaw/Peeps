@@ -91,8 +91,8 @@ var PeepGrid = (function() {
 	}
 
 	PeepGrid.prototype.getPeepAndTally = function(x, y) {
-		var r_x = Math.floor(x/(this.personSize.width))
-		  , r_y = Math.floor(y/(this.personSize.width));
+		var r_x = Math.max(0, Math.min(Math.floor(x/(this.personSize.width)), this.grid[0].length-1))
+		  , r_y = Math.max(0, Math.min(Math.floor(y/(this.personSize.width)), this.grid.length-1));
 		var peep = this.grid[r_y][r_x]
 		if (peep) {
 			this.tally++;
