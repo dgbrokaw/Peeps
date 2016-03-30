@@ -15,8 +15,8 @@ var PeepGrid = (function() {
 	}
 
 	PeepGrid.defaultOptions = {
-		rows: 5
-	, peoplePerRow: 20
+		rows: 10
+	, peoplePerRow: 10
 	, scale: 1
 	, margin_right: 10
 	, margin_bottom: 10
@@ -25,8 +25,8 @@ var PeepGrid = (function() {
 	PeepGrid.prototype.initSVGAndDefs = function() {
 		this.svgSize = { width: (this.options.peoplePerRow * this.personSize.width) + 2
 		               , height: (this.options.rows * this.personSize.height) + 12 }
-		// this.svgSize.width += (this.options.peoplePerRow - 1) * this.options.margin_right;
-		// this.svgSize.height += (this.options.ro
+		this.svgSize.width += (this.options.peoplePerRow - 1) * this.options.margin_right;
+		this.svgSize.height += (this.options.rows - 1) * this.options.margin_bottom;
 
 		this.svg = this.container.append('svg')
 			.attr('width', this.svgSize.width*this.options.scale)
@@ -37,12 +37,7 @@ var PeepGrid = (function() {
 			.attr('viewBox', '0 0 ' + this.personSize.width + ' ' + this.personSize.height)
 			.append('g')
 			.attr('id', 'person');
-
-		// background (not visible)
-		// this.personDef.append('path')
-		// 	.attr('d', "M13.945,1.91c-6.758,0-12.25,5.5-12.25,12.258v94.039c0,6.734,5.492,12.227,12.25,12.227h94.023c6.766,0,12.258-5.492,12.258-12.227V14.168c0-6.758-5.492-12.258-12.258-12.258H13.945z")
-		// 	.attr('fill', '#FFFFFF');
-
+			
 		// head of the person
 		this.personDef.append('path')
 			.attr('d', "M60.727,27.41c4.555,0,8.273-3.688,8.273-8.273c0-4.57-3.719-8.281-8.273-8.281c-4.57,0-8.281,3.711-8.281,8.281C52.445,23.723,56.156,27.41,60.727,27.41z")
@@ -61,10 +56,14 @@ var PeepGrid = (function() {
 		for (var j=0; j<this.options.rows; j++) {
 			var row = [];
 			for (var i=0; i<this.options.peoplePerRow; i++) {
+				var x = i*this.personSize.width
+				  , y = j*this.personSize.height;
+				if (x > 0) x += i * this.options.margin_right;
+				if (y > 0) y += j * this.options.margin_bottom;
 				var peep = this.svg.append('use')
 					.attr('xlink:href', '#person')
-					.attr('x', i*this.personSize.width)
-					.attr('y', j*this.personSize.height)
+					.attr('x', x)
+					.attr('y', y)
 					.style('fill', 'none');
 				row.push(peep);
 			}
@@ -97,8 +96,8 @@ var PeepGrid = (function() {
 	}
 
 	PeepGrid.prototype.getPeepAndTally = function(x, y) {
-		var r_x = Math.max(0, Math.min(Math.floor(x/(this.personSize.width)), this.grid[0].length-1))
-		  , r_y = Math.max(0, Math.min(Math.floor(y/(this.personSize.height)), this.grid.length-1));
+		var r_x = Math.max(0, Math.min(Math.floor(x/(this.personSize.width+this.options.margin_right)), this.grid[0].length-1))
+		  , r_y = Math.max(0, Math.min(Math.floor(y/(this.personSize.height+this.options.margin_bottom)), this.grid.length-1));
 		var peep = this.grid[r_y][r_x]
 		if (peep) {
 			this.tally++;
