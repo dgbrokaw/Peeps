@@ -1,5 +1,6 @@
 # peeps
 A grid of stick figures that are colored when dragged over.
+If you start dragging on a filled figure, it will be unfilled and all others dragged over in the same motion will be unfilled.
 
 To test, open `index.html`.
 
@@ -20,3 +21,6 @@ Available options:
 - "scale": size of people (default: 0.75)
 - "rows": number of rows (default: 10)
 - "peoplePerRow": the number of people in each row (default: 10)
+- "margin_right": pixel count of space between each person horizontally (default: 10)
+- "margin_bottom": pixel count of space between each person vertically (default: 10)
+- "textbox": id of a textbox. the value of the textbox will be updated to the current tally (example: '#tally') (default: none)

@@ -27,3 +27,7 @@
 <use x='0' y='0' xlink:href="#filled-man"/>
 <use x='100' y='0' xlink:href="#empty-man"/>
 </svg> -->
+
+old width: 118
+new width: 44
+margin was (118-44)/2 = 37

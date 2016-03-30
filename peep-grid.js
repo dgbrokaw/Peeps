@@ -1,9 +1,17 @@
 var PeepGrid = (function() {
 	var PeepGrid = function(container, options) {
 		this.container = d3.select(container);
+
 		this.options = extend(PeepGrid.defaultOptions, options);
 		this.personSize = {width: 44, height: 102}
 		this.tally = 0;
+		this.selectMode = true;
+
+		if (this.options.textbox) {
+			this.textbox = d3.select(this.options.textbox);
+			this.textbox.property('value', this.tally);
+		}
+
 		this.initSVGAndDefs();
 		this.initPeeps();
 		this.initEvents();
@@ -37,7 +45,7 @@ var PeepGrid = (function() {
 			.attr('viewBox', '0 0 ' + this.personSize.width + ' ' + this.personSize.height)
 			.append('g')
 			.attr('id', 'person');
-			
+
 		// head of the person
 		this.personDef.append('path')
 			.attr('d', "M60.727,27.41c4.555,0,8.273-3.688,8.273-8.273c0-4.57-3.719-8.281-8.273-8.281c-4.57,0-8.281,3.711-8.281,8.281C52.445,23.723,56.156,27.41,60.727,27.41z")
@@ -60,11 +68,12 @@ var PeepGrid = (function() {
 				  , y = j*this.personSize.height;
 				if (x > 0) x += i * this.options.margin_right;
 				if (y > 0) y += j * this.options.margin_bottom;
-				var peep = this.svg.append('use')
-					.attr('xlink:href', '#person')
-					.attr('x', x)
-					.attr('y', y)
-					.style('fill', 'none');
+				var peep = { el: this.svg.append('use')
+										       .attr('xlink:href', '#person')
+					                 .attr('x', x)
+					                 .attr('y', y)
+					                 .style('fill', 'none')
+									 , filled: false }
 				row.push(peep);
 			}
 			this.grid.push(row);
@@ -84,25 +93,39 @@ var PeepGrid = (function() {
 
 	PeepGrid.prototype.setupDrag = function() {
 		var drag = d3.behavior.drag()
+			.on('dragstart', this.dragstart.bind(this))
     	.on('drag', this.dragmove.bind(this));
 		return drag;
 	}
 
-	PeepGrid.prototype.dragmove = function() {
-		var x = d3.event.x
-		  , y = d3.event.y;
-		var peep = this.getPeepAndTally(x, y);
-		if (peep) peep.style('fill', '#000000');
+	// If the drag starts on a filled peep, we switch off select mode and all peeps
+	// we drag over will be unfilled and the tally will be decreased.
+	PeepGrid.prototype.dragstart = function() {
+		this.selectMode = true;
+		var peep = this.getPeep(d3.event.sourceEvent.x, d3.event.sourceEvent.y);
+		if (peep.filled) this.selectMode = false;
 	}
 
-	PeepGrid.prototype.getPeepAndTally = function(x, y) {
+	// Fills the peep, increments the tally.
+	PeepGrid.prototype.dragmove = function() {
+		console.log(d3.event);
+		var peep = this.getPeep(d3.event.x, d3.event.y);
+		if (this.selectMode && !peep.filled) {
+			peep.el.style('fill', '#000000');
+			peep.filled = true;
+			this.tally++;
+		} else if (!this.selectMode && peep.filled) {
+			peep.el.style('fill', 'none');
+			peep.filled = false;
+			this.tally--;
+		}
+		if (this.textbox) this.textbox.property('value', this.tally);
+	}
+
+	PeepGrid.prototype.getPeep = function(x, y) {
 		var r_x = Math.max(0, Math.min(Math.floor(x/(this.personSize.width+this.options.margin_right)), this.grid[0].length-1))
 		  , r_y = Math.max(0, Math.min(Math.floor(y/(this.personSize.height+this.options.margin_bottom)), this.grid.length-1));
-		var peep = this.grid[r_y][r_x]
-		if (peep) {
-			this.tally++;
-			this.grid[r_y][r_x] = false;
-		}
+		var peep = this.grid[r_y][r_x];
 		return peep;
 	}
 
